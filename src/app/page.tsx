@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
@@ -19,26 +20,45 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ d
 
   return (
     <main className="mx-auto max-w-5xl px-4 sm:px-6">
-      <section className="py-20 sm:py-28">
-        {denied ? (
-          <div className="mb-8 max-w-md">
-            <Alert kind="info">หน้านี้ไม่เปิดให้บัญชีประเภทของคุณใช้งาน</Alert>
+      <section className="grid items-center gap-8 py-16 sm:py-24 lg:grid-cols-[1.05fr_1fr] lg:gap-6">
+        <div>
+          {denied ? (
+            <div className="mb-8 max-w-md">
+              <Alert kind="info">หน้านี้ไม่เปิดให้บัญชีประเภทของคุณใช้งาน</Alert>
+            </div>
+          ) : null}
+          <p className="text-sm text-neutral-400">ระบบจองคิวนำรถเข้ารับบริการ</p>
+          <h1 className="mt-3 text-4xl font-semibold leading-tight tracking-tight text-neutral-900 sm:text-6xl sm:leading-[1.1] lg:text-5xl xl:text-6xl">
+            <span className="lg:whitespace-nowrap">นัดวันเข้าศูนย์บริการ</span>
+            <br />
+            <span className="text-neutral-400">ง่าย ไม่ต้องรอคิว</span>
+          </h1>
+          <p className="mt-6 max-w-md text-lg leading-8 text-neutral-500">
+            เลือกแพ็กเกจบริการ กรอกข้อมูลรถ แล้วเลือกวันและเวลาที่สะดวก
+          </p>
+          <div className="mt-10 flex flex-wrap gap-3">
+            <Link href="/services" className={btnPrimary}>ดูบริการทั้งหมด</Link>
+            {role === "member" ? <Link href="/appointments/new" className={btnSecondary}>จองคิว</Link> : null}
+            {role === "admin" ? <Link href="/admin/services" className={btnSecondary}>จัดการบริการ</Link> : null}
+            {!session ? <Link href="/register" className={btnSecondary}>สมัครสมาชิก</Link> : null}
           </div>
-        ) : null}
-        <p className="text-sm text-neutral-400">ระบบจองคิวนำรถเข้ารับบริการ</p>
-        <h1 className="mt-3 max-w-2xl text-4xl font-semibold leading-tight tracking-tight text-neutral-900 sm:text-6xl sm:leading-[1.1]">
-          นัดวันเข้าศูนย์บริการ
-          <br />
-          <span className="text-neutral-400">ง่าย ไม่ต้องรอคิว</span>
-        </h1>
-        <p className="mt-6 max-w-lg text-lg leading-8 text-neutral-500">
-          เลือกแพ็กเกจบริการ กรอกข้อมูลรถ แล้วเลือกวันและเวลาที่สะดวก
-        </p>
-        <div className="mt-10 flex flex-wrap gap-3">
-          <Link href="/services" className={btnPrimary}>ดูบริการทั้งหมด</Link>
-          {role === "member" ? <Link href="/appointments/new" className={btnSecondary}>จองคิว</Link> : null}
-          {role === "admin" ? <Link href="/admin/services" className={btnSecondary}>จัดการบริการ</Link> : null}
-          {!session ? <Link href="/register" className={btnSecondary}>สมัครสมาชิก</Link> : null}
+        </div>
+
+        <div className="relative mx-auto w-full max-w-xl lg:max-w-none">
+          {/* soft ground shadow so the white car sits on the white page */}
+          <div
+            className="absolute inset-x-[4%] bottom-[16%] h-[14%] rounded-[50%] bg-[radial-gradient(closest-side,rgba(0,0,0,0.12),transparent)] blur-md"
+            aria-hidden
+          />
+          <Image
+            src="/img/hero-car.png"
+            alt="รถสปอร์ตสีขาว"
+            width={1280}
+            height={960}
+            priority
+            sizes="(min-width: 1024px) 560px, 90vw"
+            className="relative h-auto w-full drop-shadow-[0_24px_24px_rgba(0,0,0,0.08)]"
+          />
         </div>
       </section>
 
