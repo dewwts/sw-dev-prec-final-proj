@@ -3,8 +3,8 @@
 Project 4 frontend · **Tinnapat Sittisuwan**
 
 Next.js 16 (App Router) + next-auth (Credentials / JWT) + MUI + Tailwind CSS 4 + dayjs.
-UI is in Thai with a minimal white design and the Anuphan font (MUI and the date picker use the Thai locale). Built
-built for the backend at <https://github.com/SWDevPrac2-69-1/PJ04-CarServiceAppoint>.
+UI is in Thai with a minimal white design and the Anuphan font (MUI and the date picker use the Thai locale).
+Built for the backend at <https://github.com/SWDevPrac2-69-1/PJ04-CarServiceAppoint>.
 
 ## Run
 
