@@ -17,15 +17,13 @@ export default async function EditServicePage({ params }: { params: Promise<{ si
   }
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-14 sm:px-8">
-      <PageHeader kicker="Admin" title="Edit service package">
-        <span className="font-mono text-xs">ID: {service._id}</span>
+    <main className="mx-auto w-full max-w-2xl px-4 py-16 sm:px-6">
+      <PageHeader kicker="ผู้ดูแลระบบ" title="แก้ไขแพ็กเกจบริการ">
+        <span className="text-xs text-neutral-400">รหัส {service._id}</span>
       </PageHeader>
-      <div className="rounded-xl border border-ink/10 bg-white p-6 shadow-sm sm:p-8">
-        <ServiceForm service={service} />
-      </div>
-      <div className="mt-8 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50/50 p-5">
-        <p className="text-sm text-red-800">Delete this package. It will no longer be bookable.</p>
+      <ServiceForm service={service} />
+      <div className="mt-12 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-neutral-200 p-5">
+        <p className="text-sm text-neutral-500">ลบแพ็กเกจนี้ (จะไม่สามารถจองได้อีก)</p>
         <ServiceDeleteButton id={service._id} redirectTo="/admin/services" />
       </div>
     </main>

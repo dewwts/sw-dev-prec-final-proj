@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { InputAdornment, TextField } from "@mui/material";
 import { createService, updateService } from "@/libs/services";
+import { btnPrimary, btnSecondary } from "@/libs/ui";
 import Alert from "./Alert";
 
 export default function ServiceForm({ service }: { service?: ServiceItem }) {
@@ -21,21 +22,21 @@ export default function ServiceForm({ service }: { service?: ServiceItem }) {
     event.preventDefault();
     setError("");
     if (!session) {
-      setError("Your session has expired. Please sign in again.");
+      setError("เซสชันหมดอายุ กรุณาเข้าสู่ระบบอีกครั้ง");
       return;
     }
     const estimatedDuration = Number(duration);
     const serviceFee = Number(fee);
     if (!name.trim() || !description.trim() || duration === "" || fee === "") {
-      setError("Please fill in every field.");
+      setError("กรุณากรอกข้อมูลให้ครบทุกช่อง");
       return;
     }
     if (!Number.isInteger(estimatedDuration) || estimatedDuration < 1) {
-      setError("Estimated duration must be a whole number of minutes (at least 1).");
+      setError("ระยะเวลาต้องเป็นจำนวนเต็มนาที (อย่างน้อย 1 นาที)");
       return;
     }
     if (!Number.isFinite(serviceFee) || serviceFee < 0) {
-      setError("Service fee cannot be negative.");
+      setError("ค่าบริการต้องไม่ติดลบ");
       return;
     }
 
@@ -50,43 +51,41 @@ export default function ServiceForm({ service }: { service?: ServiceItem }) {
       router.push(`/admin/services?${service ? "updated" : "created"}=1`);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setError(err instanceof Error ? err.message : "เกิดข้อผิดพลาด");
       setLoading(false);
     }
   };
 
   return (
     <form onSubmit={submit} className="flex flex-col gap-5" noValidate>
-      <TextField label="Service name" name="name" fullWidth value={name} onChange={(e) => setName(e.target.value)} />
-      <TextField label="Description" name="description" fullWidth multiline minRows={3} value={description} onChange={(e) => setDescription(e.target.value)} />
+      <TextField label="ชื่อบริการ" name="name" fullWidth value={name} onChange={(e) => setName(e.target.value)} />
+      <TextField label="รายละเอียด" name="description" fullWidth multiline minRows={3} value={description} onChange={(e) => setDescription(e.target.value)} />
       <div className="grid gap-5 sm:grid-cols-2">
         <TextField
-          label="Estimated duration"
+          label="ระยะเวลาโดยประมาณ"
           name="estimatedDuration"
           type="number"
           fullWidth
           value={duration}
           onChange={(e) => setDuration(e.target.value)}
-          slotProps={{ input: { endAdornment: <InputAdornment position="end">min</InputAdornment> }, htmlInput: { min: 1, step: 1 } }}
+          slotProps={{ input: { endAdornment: <InputAdornment position="end">นาที</InputAdornment> }, htmlInput: { min: 1, step: 1 } }}
         />
         <TextField
-          label="Service fee"
+          label="ค่าบริการ"
           name="serviceFee"
           type="number"
           fullWidth
           value={fee}
           onChange={(e) => setFee(e.target.value)}
-          slotProps={{ input: { startAdornment: <InputAdornment position="start">฿</InputAdornment> }, htmlInput: { min: 0, step: "any" } }}
+          slotProps={{ input: { endAdornment: <InputAdornment position="end">บาท</InputAdornment> }, htmlInput: { min: 0, step: "any" } }}
         />
       </div>
       {error ? <Alert>{error}</Alert> : null}
-      <div className="flex flex-wrap gap-3">
-        <button type="submit" disabled={loading} className="rounded-md bg-signal px-6 py-3 font-semibold text-white transition hover:bg-signal-dark disabled:opacity-60">
-          {loading ? "Saving…" : service ? "Save changes" : "Add package"}
+      <div className="flex flex-wrap gap-3 border-t border-neutral-100 pt-6">
+        <button type="submit" disabled={loading} className={btnPrimary}>
+          {loading ? "กำลังบันทึก…" : service ? "บันทึกการแก้ไข" : "เพิ่มแพ็กเกจ"}
         </button>
-        <button type="button" onClick={() => router.back()} className="rounded-md border border-ink/20 px-6 py-3 font-semibold text-ink hover:bg-ink/5">
-          Cancel
-        </button>
+        <button type="button" onClick={() => router.back()} className={btnSecondary}>ยกเลิก</button>
       </div>
     </form>
   );

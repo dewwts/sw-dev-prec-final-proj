@@ -1,17 +1,14 @@
 "use client";
 
+import { btnPrimary } from "@/libs/ui";
+
 export default function ErrorPage({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   return (
-    <main className="mx-auto w-full max-w-xl px-4 py-20 text-center">
-      <p className="font-mono text-xs uppercase tracking-[0.25em] text-signal">Something went wrong</p>
-      <h1 className="mt-2 font-display text-4xl uppercase text-ink">Can&apos;t load this page</h1>
-      <p className="mt-4 text-steel">{error.message || "Unexpected error."}</p>
-      <p className="mt-2 text-sm text-steel">
-        Make sure the backend is running (see <span className="font-mono">BACKEND_URL</span> in .env.local).
-      </p>
-      <button type="button" onClick={reset} className="mt-8 rounded-md bg-ink px-6 py-3 font-semibold text-white hover:bg-signal">
-        Try again
-      </button>
+    <main className="mx-auto w-full max-w-md px-4 py-24 text-center">
+      <h1 className="text-2xl font-semibold text-neutral-900">โหลดหน้านี้ไม่สำเร็จ</h1>
+      <p className="mt-3 text-neutral-500">{error.message || "เกิดข้อผิดพลาดที่ไม่คาดคิด"}</p>
+      <p className="mt-1 text-sm text-neutral-400">ตรวจสอบว่า backend ทำงานอยู่ (ค่า BACKEND_URL ใน .env.local)</p>
+      <button type="button" onClick={reset} className={`${btnPrimary} mt-8`}>ลองอีกครั้ง</button>
     </main>
   );
 }

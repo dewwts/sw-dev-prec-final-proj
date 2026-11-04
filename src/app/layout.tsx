@@ -1,32 +1,33 @@
 import type { Metadata } from "next";
-import { Archivo, Archivo_Black, JetBrains_Mono } from "next/font/google";
+import { Anuphan } from "next/font/google";
 import { getServerSession } from "next-auth";
 import TopMenu from "@/components/TopMenu";
 import NextAuthProvider from "@/providers/NextAuthProvider";
+import MuiProvider from "@/providers/MuiProvider";
 import { authOptions } from "./api/auth/[...nextauth]/authOptions";
 import "./globals.css";
 
-const body = Archivo({ subsets: ["latin"], variable: "--font-body" });
-const display = Archivo_Black({ subsets: ["latin"], weight: "400", variable: "--font-display-face" });
-const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono-face" });
+const anuphan = Anuphan({ subsets: ["thai", "latin"], weight: ["300", "400", "500", "600", "700"], variable: "--font-anuphan" });
 
 export const metadata: Metadata = {
-  title: "PitStop — Car Service Booking",
-  description: "Book a time to bring your car to the service center.",
+  title: "PitStop — จองคิวเข้ารับบริการรถยนต์",
+  description: "จองวันและเวลานำรถเข้ารับบริการที่ศูนย์บริการ",
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const session = await getServerSession(authOptions);
 
   return (
-    <html lang="en" className={`${body.variable} ${display.variable} ${mono.variable}`}>
+    <html lang="th" className={anuphan.variable}>
       <body>
         <NextAuthProvider session={session}>
-          <TopMenu />
-          {children}
-          <footer className="mt-24 border-t border-ink/10 py-8 text-center text-xs text-steel">
-            PitStop Service Center · Project 4 · Tinnapat Sittisuwan
-          </footer>
+          <MuiProvider>
+            <TopMenu />
+            {children}
+            <footer className="mt-24 border-t border-neutral-100 py-10 text-center text-xs text-neutral-400">
+              PitStop ศูนย์บริการรถยนต์ · Project 4 · Tinnapat Sittisuwan
+            </footer>
+          </MuiProvider>
         </NextAuthProvider>
       </body>
     </html>

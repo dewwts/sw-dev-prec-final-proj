@@ -14,17 +14,15 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   if (session && !expired) redirect(target);
 
   return (
-    <main className="mx-auto w-full max-w-md px-4 py-16">
+    <main className="mx-auto w-full max-w-sm px-4 py-20">
       {expired && session ? <ClearSession /> : null}
-      <PageHeader kicker="Welcome back" title="Sign in">Sign in with your email and password.</PageHeader>
+      <PageHeader title="เข้าสู่ระบบ">ใช้อีเมลและรหัสผ่านที่สมัครไว้</PageHeader>
       {expired ? (
         <div className="mb-6">
-          <Alert kind="info">Your session has expired. Please sign in again.</Alert>
+          <Alert kind="info">เซสชันหมดอายุแล้ว กรุณาเข้าสู่ระบบอีกครั้ง</Alert>
         </div>
       ) : null}
-      <div className="rounded-xl border border-ink/10 bg-white p-6 shadow-sm sm:p-8">
-        <LoginForm callbackUrl={target} />
-      </div>
+      <LoginForm callbackUrl={target} />
     </main>
   );
 }

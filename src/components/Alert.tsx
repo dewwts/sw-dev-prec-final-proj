@@ -1,11 +1,11 @@
 export default function Alert({ kind = "error", children }: { kind?: "error" | "success" | "info"; children: React.ReactNode }) {
   const styles = {
-    error: "border-red-300 bg-red-50 text-red-800",
-    success: "border-emerald-300 bg-emerald-50 text-emerald-800",
-    info: "border-amber-300 bg-amber-50 text-amber-900",
+    error: "border-red-100 bg-red-50/60 text-red-700",
+    success: "border-emerald-100 bg-emerald-50/60 text-emerald-700",
+    info: "border-neutral-200 bg-neutral-50 text-neutral-700",
   }[kind];
   return (
-    <div role={kind === "error" ? "alert" : "status"} className={`rounded-lg border px-4 py-3 text-sm ${styles}`}>
+    <div role={kind === "error" ? "alert" : "status"} className={`rounded-xl border px-4 py-3 text-sm ${styles}`}>
       {children}
     </div>
   );

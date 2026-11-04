@@ -1,52 +1,47 @@
 import dayjs from "dayjs";
-import { formatDate, formatDuration, formatFee, formatTime, isFuture } from "@/libs/format";
+import { formatDuration, formatFee, formatTime, isFuture } from "@/libs/format";
 import AppointmentActions from "./AppointmentActions";
 
 export default function AppointmentCard({ appointment, showOwner }: { appointment: AppointmentItem; showOwner: boolean }) {
   const upcoming = isFuture(appointment);
   // editing needs a date today or later (backend rule), past history can still be deleted
   const canEdit = !dayjs(appointment.startsAt).isBefore(dayjs().startOf("day"));
-  const start = dayjs(appointment.startsAt);
+  const start = dayjs(appointment.startsAt).locale("th");
 
   return (
-    <article className={`flex flex-col overflow-hidden rounded-xl border bg-white shadow-sm sm:flex-row ${upcoming ? "border-ink/10" : "border-ink/5 opacity-75"}`}>
-      <div className={`flex shrink-0 flex-row items-center justify-between gap-4 px-6 py-4 sm:w-40 sm:flex-col sm:justify-center sm:py-6 ${upcoming ? "bg-ink text-white" : "bg-ink/10 text-ink"}`}>
-        <div className="text-center">
-          <p className="font-mono text-xs uppercase tracking-widest opacity-70">{start.format("MMM")}</p>
-          <p className="font-display text-4xl leading-none">{start.format("D")}</p>
-          <p className="font-mono text-xs opacity-70">{start.format("YYYY")}</p>
-        </div>
-        <p className="font-mono text-sm font-semibold text-signal">
-          {formatTime(appointment.startsAt)}–{formatTime(appointment.endsAt)}
+    <article className={`flex flex-col gap-5 rounded-2xl border border-neutral-200 bg-white p-5 sm:flex-row sm:items-center sm:gap-6 ${upcoming ? "" : "opacity-60"}`}>
+      <div className="flex shrink-0 items-baseline gap-3 sm:w-28 sm:flex-col sm:items-start sm:gap-0">
+        <p className="text-3xl font-semibold leading-none tabular-nums text-neutral-900">{start.format("D")}</p>
+        <p className="text-sm text-neutral-500 sm:mt-1">{start.format("MMM YYYY")}</p>
+        <p className="text-sm tabular-nums text-neutral-900 sm:mt-2">
+          {formatTime(appointment.startsAt)}–{formatTime(appointment.endsAt)} น.
         </p>
       </div>
-      <div className="flex flex-1 flex-col gap-4 p-6">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h3 className="font-display text-lg uppercase leading-tight text-ink">
-              {appointment.service?.name ?? "Service package removed"}
-            </h3>
-            <p className="mt-1 text-sm text-steel">
-              {formatDate(appointment.startsAt)} · {formatDuration(appointment.durationMinutes)}
-              {appointment.service ? ` · ${formatFee(appointment.service.serviceFee)}` : ""}
-              {appointment.service && appointment.service.isActive === false ? " · package no longer offered" : ""}
-            </p>
-          </div>
-          <span className={`rounded-full px-3 py-1 font-mono text-[10px] uppercase tracking-widest ${upcoming ? "bg-signal/10 text-signal" : "bg-ink/5 text-steel"}`}>
-            {upcoming ? "Upcoming" : "Past"}
+
+      <div className="flex min-w-0 flex-1 flex-col gap-2 sm:border-l sm:border-neutral-100 sm:pl-6">
+        <div className="flex flex-wrap items-center gap-2">
+          <h3 className="font-semibold text-neutral-900">{appointment.service?.name ?? "แพ็กเกจถูกลบแล้ว"}</h3>
+          <span className={`rounded-full px-2.5 py-0.5 text-xs ${upcoming ? "bg-neutral-900 text-white" : "bg-neutral-100 text-neutral-500"}`}>
+            {upcoming ? "กำลังจะถึง" : "ผ่านมาแล้ว"}
           </span>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="plate rounded border-2 border-ink bg-paper px-3 py-1 text-sm font-bold text-ink">{appointment.registrationNumber}</span>
-          <span className="text-sm text-ink">
-            {appointment.brand} {appointment.model}
-          </span>
-        </div>
+        <p className="text-sm text-neutral-500">
+          {start.format("ddddที่ D MMMM YYYY")} · {formatDuration(appointment.durationMinutes)}
+          {appointment.service ? ` · ${formatFee(appointment.service.serviceFee)}` : ""}
+          {appointment.service && appointment.service.isActive === false ? " · แพ็กเกจยกเลิกแล้ว" : ""}
+        </p>
+        <p className="text-sm text-neutral-900">
+          <span className="plate rounded-md border border-neutral-200 px-2 py-0.5 font-medium">{appointment.registrationNumber}</span>
+          <span className="ml-2">{appointment.brand} {appointment.model}</span>
+        </p>
         {showOwner && appointment.user ? (
-          <p className="text-sm text-steel">
-            <span className="font-semibold text-ink">Member:</span> {appointment.user.name} · {appointment.user.email} · {appointment.user.tel}
+          <p className="text-sm text-neutral-500">
+            ผู้จอง: <span className="text-neutral-900">{appointment.user.name}</span> · {appointment.user.email} · {appointment.user.tel}
           </p>
         ) : null}
+      </div>
+
+      <div className="shrink-0">
         <AppointmentActions id={appointment._id} canEdit={canEdit} />
       </div>
     </article>

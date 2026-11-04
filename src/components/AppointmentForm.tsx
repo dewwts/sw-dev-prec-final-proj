@@ -6,12 +6,11 @@ import { useSession } from "next-auth/react";
 import dayjs, { type Dayjs } from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
 import { createAppointment, updateAppointment } from "@/libs/appointments";
-import { formatDuration, formatFee, toUtcSchedule } from "@/libs/format";
+import { formatDuration, formatFee, formatShortDate, toUtcSchedule } from "@/libs/format";
 import { checkBookingRules } from "@/libs/rules";
+import { btnPrimary, btnSecondary } from "@/libs/ui";
 import Alert from "./Alert";
 
 type Props = {
@@ -20,6 +19,18 @@ type Props = {
   defaultServiceId?: string;
   appointment?: AppointmentItem; // present when editing
 };
+
+function Section({ step, title, children }: { step: number; title: string; children: React.ReactNode }) {
+  return (
+    <fieldset className="flex flex-col gap-4">
+      <legend className="mb-4 flex items-center gap-3 text-sm font-medium text-neutral-900">
+        <span className="grid h-6 w-6 place-items-center rounded-full border border-neutral-200 text-xs text-neutral-500">{step}</span>
+        {title}
+      </legend>
+      {children}
+    </fieldset>
+  );
+}
 
 export default function AppointmentForm({ services, existing, defaultServiceId, appointment }: Props) {
   const router = useRouter();
@@ -46,42 +57,37 @@ export default function AppointmentForm({ services, existing, defaultServiceId, 
   const [loading, setLoading] = useState(false);
 
   const selected = serviceOptions.find((s) => s._id === serviceId);
+  // keep the saved duration when the package does not change (same as the backend)
+  const durationMinutes =
+    appointment && appointment.service?._id === serviceId ? appointment.durationMinutes : selected?.estimatedDuration ?? 1;
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
     if (!session) {
-      setError("Your session has expired. Please sign in again.");
+      setError("เซสชันหมดอายุ กรุณาเข้าสู่ระบบอีกครั้ง");
       return;
     }
     if (!serviceId || !registrationNumber.trim() || !brand.trim() || !model.trim() || !date || !time) {
-      setError("Please fill in every field.");
+      setError("กรุณากรอกข้อมูลให้ครบทุกช่อง");
       return;
     }
     if (!date.isValid() || !time.isValid()) {
-      setError("Please pick a valid date and time.");
+      setError("กรุณาเลือกวันและเวลาให้ถูกต้อง");
       return;
     }
     if (date.startOf("day").isBefore(dayjs().startOf("day"))) {
-      setError("The appointment date cannot be before today.");
+      setError("วันนัดต้องไม่เป็นวันที่ผ่านมาแล้ว");
       return;
     }
     if (selected && selected.isActive === false) {
-      setError("This service package is no longer offered. Please choose another one.");
+      setError("แพ็กเกจนี้ยกเลิกแล้ว กรุณาเลือกแพ็กเกจอื่น");
       return;
     }
 
     const schedule = toUtcSchedule(date, time);
-    // keep the saved duration when the package does not change (same as the backend)
-    const durationMinutes =
-      appointment && appointment.service?._id === serviceId ? appointment.durationMinutes : selected?.estimatedDuration ?? 1;
     const ruleError = checkBookingRules(
-      {
-        ownerId: appointment?.user?._id ?? session.user._id,
-        registrationNumber,
-        durationMinutes,
-        ...schedule,
-      },
+      { ownerId: appointment?.user?._id ?? session.user._id, registrationNumber, durationMinutes, ...schedule },
       existing,
       appointment?._id
     );
@@ -108,74 +114,64 @@ export default function AppointmentForm({ services, existing, defaultServiceId, 
       router.push(`/appointments?${editing ? "updated" : "created"}=1`);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setError(err instanceof Error ? err.message : "เกิดข้อผิดพลาด");
       setLoading(false);
     }
   };
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <form onSubmit={submit} className="flex flex-col gap-8" noValidate>
-        <fieldset className="flex flex-col gap-4">
-          <legend className="mb-3 font-mono text-xs uppercase tracking-[0.2em] text-signal">1 · Service package</legend>
-          <FormControl fullWidth>
-            <InputLabel id="service-label">Service package</InputLabel>
-            <Select labelId="service-label" id="service" name="service" label="Service package" value={serviceId} onChange={(e) => setServiceId(e.target.value)}>
-              {serviceOptions.map((s) => (
-                <MenuItem key={s._id} value={s._id} disabled={s.isActive === false}>
-                  {s.name} · {formatDuration(s.estimatedDuration)} · {formatFee(s.serviceFee)}
-                  {s.isActive === false ? " (no longer offered)" : ""}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          {selected ? <p className="text-sm text-steel">{selected.description}</p> : null}
-        </fieldset>
+    <form onSubmit={submit} className="flex flex-col gap-10" noValidate>
+      <Section step={1} title="แพ็กเกจบริการ">
+        <FormControl fullWidth>
+          <InputLabel id="service-label">เลือกแพ็กเกจ</InputLabel>
+          <Select labelId="service-label" id="service" name="service" label="เลือกแพ็กเกจ" value={serviceId} onChange={(e) => setServiceId(e.target.value)}>
+            {serviceOptions.map((s) => (
+              <MenuItem key={s._id} value={s._id} disabled={s.isActive === false}>
+                {s.name} · {formatDuration(s.estimatedDuration)} · {formatFee(s.serviceFee)}
+                {s.isActive === false ? " (ยกเลิกแล้ว)" : ""}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        {selected ? <p className="text-sm leading-6 text-neutral-500">{selected.description}</p> : null}
+      </Section>
 
-        <fieldset className="flex flex-col gap-4">
-          <legend className="mb-3 font-mono text-xs uppercase tracking-[0.2em] text-signal">2 · Your car</legend>
-          <TextField
-            label="Registration number"
-            name="registrationNumber"
-            fullWidth
-            value={registrationNumber}
-            onChange={(e) => setRegistrationNumber(e.target.value)}
-            placeholder="e.g. 1กข-1234"
-            slotProps={{ htmlInput: { className: "plate" } }}
-          />
-          <div className="grid gap-4 sm:grid-cols-2">
-            <TextField label="Brand" name="brand" fullWidth value={brand} onChange={(e) => setBrand(e.target.value)} placeholder="e.g. Toyota" />
-            <TextField label="Model" name="model" fullWidth value={model} onChange={(e) => setModel(e.target.value)} placeholder="e.g. Yaris" />
-          </div>
-        </fieldset>
-
-        <fieldset className="flex flex-col gap-4">
-          <legend className="mb-3 font-mono text-xs uppercase tracking-[0.2em] text-signal">3 · Date &amp; time</legend>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <DatePicker label="Date" value={date} onChange={setDate} disablePast format="DD/MM/YYYY" slotProps={{ textField: { fullWidth: true, name: "date" } }} />
-            <TimePicker label="Start time" value={time} onChange={setTime} ampm={false} minutesStep={15} slotProps={{ textField: { fullWidth: true, name: "time" } }} />
-          </div>
-          {selected && date && time ? (
-            <p className="font-mono text-sm text-steel">
-              {date.format("ddd D MMM YYYY")} · {time.format("HH:mm")} –{" "}
-              {time
-                .add(appointment && appointment.service?._id === serviceId ? appointment.durationMinutes : selected.estimatedDuration, "minute")
-                .format("HH:mm")}
-            </p>
-          ) : null}
-        </fieldset>
-
-        {error ? <Alert>{error}</Alert> : null}
-
-        <div className="flex flex-wrap gap-3">
-          <button type="submit" disabled={loading} className="rounded-md bg-signal px-6 py-3 font-semibold text-white transition hover:bg-signal-dark disabled:opacity-60">
-            {loading ? "Saving…" : editing ? "Save changes" : "Book appointment"}
-          </button>
-          <button type="button" onClick={() => router.back()} className="rounded-md border border-ink/20 px-6 py-3 font-semibold text-ink hover:bg-ink/5">
-            Cancel
-          </button>
+      <Section step={2} title="ข้อมูลรถ">
+        <TextField
+          label="ทะเบียนรถ"
+          name="registrationNumber"
+          fullWidth
+          value={registrationNumber}
+          onChange={(e) => setRegistrationNumber(e.target.value)}
+          placeholder="เช่น 1กข-1234"
+          slotProps={{ htmlInput: { className: "plate" } }}
+        />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <TextField label="ยี่ห้อ" name="brand" fullWidth value={brand} onChange={(e) => setBrand(e.target.value)} placeholder="เช่น Toyota" />
+          <TextField label="รุ่น" name="model" fullWidth value={model} onChange={(e) => setModel(e.target.value)} placeholder="เช่น Yaris" />
         </div>
-      </form>
-    </LocalizationProvider>
+      </Section>
+
+      <Section step={3} title="วันและเวลา">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <DatePicker label="วันที่" value={date} onChange={setDate} disablePast format="DD/MM/YYYY" slotProps={{ textField: { fullWidth: true, name: "date" } }} />
+          <TimePicker label="เวลาเริ่ม" value={time} onChange={setTime} ampm={false} minutesStep={15} slotProps={{ textField: { fullWidth: true, name: "time" } }} />
+        </div>
+        {selected && date?.isValid() && time?.isValid() ? (
+          <p className="text-sm text-neutral-500">
+            {formatShortDate(date)} · {time.format("HH:mm")}–{time.add(durationMinutes, "minute").format("HH:mm")} น.
+          </p>
+        ) : null}
+      </Section>
+
+      {error ? <Alert>{error}</Alert> : null}
+
+      <div className="flex flex-wrap gap-3 border-t border-neutral-100 pt-8">
+        <button type="submit" disabled={loading} className={btnPrimary}>
+          {loading ? "กำลังบันทึก…" : editing ? "บันทึกการแก้ไข" : "ยืนยันการจอง"}
+        </button>
+        <button type="button" onClick={() => router.back()} className={btnSecondary}>ยกเลิก</button>
+      </div>
+    </form>
   );
 }

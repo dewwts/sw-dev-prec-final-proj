@@ -1,19 +1,12 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-display-face), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-mono-face), ui-monospace, monospace;
-  --color-ink: #16181d;
-  --color-paper: #f4f1ea;
-  --color-signal: #e8590c;
-  --color-signal-dark: #b84305;
-  --color-steel: #5b6270;
+  --font-sans: var(--font-anuphan), ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
-  --background: #f4f1ea;
-  --foreground: #16181d;
+  --background: #ffffff;
+  --foreground: #171717;
 }
 
 * { box-sizing: border-box; }
@@ -24,14 +17,10 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: var(--font-sans);
-}
-
-/* hazard stripe used for accents */
-.hazard {
-  background-image: repeating-linear-gradient(-45deg, #e8590c 0 12px, #16181d 12px 24px);
+  -webkit-font-smoothing: antialiased;
 }
 
 .plate {
-  font-family: var(--font-mono);
-  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
 }

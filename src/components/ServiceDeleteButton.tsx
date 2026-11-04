@@ -8,10 +8,10 @@ export default function ServiceDeleteButton({ id, redirectTo }: { id: string; re
   const { data: session } = useSession();
   return (
     <DeleteButton
-      label="Delete"
+      label="ลบ"
       redirectTo={redirectTo}
       onDelete={() => {
-        if (!session) return Promise.reject(new Error("Please sign in again."));
+        if (!session) return Promise.reject(new Error("กรุณาเข้าสู่ระบบอีกครั้ง"));
         return deleteService(session.user.token, id);
       }}
     />

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { deleteAppointment } from "@/libs/appointments";
+import { btnSecondary } from "@/libs/ui";
 import DeleteButton from "./DeleteButton";
 
 export default function AppointmentActions({ id, canEdit }: { id: string; canEdit: boolean }) {
@@ -11,14 +12,11 @@ export default function AppointmentActions({ id, canEdit }: { id: string; canEdi
   return (
     <div className="flex flex-wrap items-center gap-2">
       {canEdit ? (
-        <Link href={`/appointments/${id}/edit`} className="rounded-md border border-ink px-4 py-2 text-sm font-semibold text-ink hover:bg-ink hover:text-white">
-          Edit
-        </Link>
+        <Link href={`/appointments/${id}/edit`} className={`${btnSecondary} px-4 py-2`}>แก้ไข</Link>
       ) : null}
       <DeleteButton
-        label="Delete"
         onDelete={() => {
-          if (!session) return Promise.reject(new Error("Please sign in again."));
+          if (!session) return Promise.reject(new Error("กรุณาเข้าสู่ระบบอีกครั้ง"));
           return deleteAppointment(session.user.token, id);
         }}
       />
