@@ -1,12 +1,11 @@
-import dayjs from "dayjs";
-import { formatDuration, formatFee, formatTime, isFuture } from "@/libs/format";
+import { formatDuration, formatFee, formatTime, inAppTz, isFuture } from "@/libs/format";
 import AppointmentActions from "./AppointmentActions";
 
 export default function AppointmentCard({ appointment, showOwner }: { appointment: AppointmentItem; showOwner: boolean }) {
   const upcoming = isFuture(appointment);
   // editing needs a date today or later (backend rule), past history can still be deleted
-  const canEdit = !dayjs(appointment.startsAt).isBefore(dayjs().startOf("day"));
-  const start = dayjs(appointment.startsAt).locale("th");
+  const start = inAppTz(appointment.startsAt);
+  const canEdit = !start.isBefore(inAppTz().startOf("day"));
 
   return (
     <article className={`flex flex-col gap-5 rounded-2xl border border-neutral-200 bg-white p-5 sm:flex-row sm:items-center sm:gap-6 ${upcoming ? "" : "opacity-60"}`}>

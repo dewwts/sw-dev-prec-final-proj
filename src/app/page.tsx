@@ -39,7 +39,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ d
           <div className="mt-10 flex flex-wrap gap-3">
             <Link href="/services" className={btnPrimary}>ดูบริการทั้งหมด</Link>
             {role === "member" ? <Link href="/appointments/new" className={btnSecondary}>จองคิว</Link> : null}
-            {role === "admin" ? <Link href="/admin/services" className={btnSecondary}>จัดการบริการ</Link> : null}
+            {role === "admin" ? <Link href="/admin/dashboard" className={btnSecondary}>แดชบอร์ด</Link> : null}
             {!session ? <Link href="/register" className={btnSecondary}>สมัครสมาชิก</Link> : null}
           </div>
         </div>

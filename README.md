@@ -1,5 +1,7 @@
 # PitStop — Car Service Appointment Booking (Frontend)
 
+Live: <https://pitstop-web-delta.vercel.app> · UI flow (Figma): <https://www.figma.com/design/IF9u1rdahGoXWR4SGDeXi9>
+
 Project 4 frontend · **Tinnapat Sittisuwan**
 
 Next.js 16 (App Router) + next-auth (Credentials / JWT) + MUI + Tailwind CSS 4 + dayjs.
@@ -42,6 +44,15 @@ If a backend token is no longer valid (expired, or the database was reset), prot
 | Admin add / update / delete / view packages | `/admin/services`, `/admin/services/new`, `/admin/services/[id]/edit` (the package ID is shown) |
 | Member creates an appointment (service id, plate, brand/model, date + time) | `/appointments/new?service=<id>` |
 | Member view / edit / delete own; admin manages everyone's | `/appointments`, `/appointments/[id]/edit` |
+
+## Extra features
+
+| Feature | Where |
+|---|---|
+| Admin dashboard: today / upcoming counts, expected revenue, customers with bookings, appointments per day for the next 7 days (hover a bar for the number), most booked packages, next 5 appointments | `/admin/dashboard` (`src/libs/stats.ts`, `src/components/DayBarChart.tsx`) |
+| Search and filter appointments: search by plate, car, package, or (admin) the booker's name/email/phone; filter by package, date and status | `/appointments` (`src/components/AppointmentList.tsx`) |
+
+Dates and times are always shown in Thai time (`Asia/Bangkok`), so pages rendered on Vercel's servers (UTC) show the same time as the browser.
 
 ## Booking conditions
 

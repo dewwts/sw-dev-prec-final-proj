@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Alert from "@/components/Alert";
-import AppointmentCard from "@/components/AppointmentCard";
+import AppointmentList from "@/components/AppointmentList";
 import PageHeader from "@/components/PageHeader";
 import { getAppointments } from "@/libs/appointments";
 import { isFuture, MAX_FUTURE_APPOINTMENTS } from "@/libs/format";
@@ -14,7 +14,6 @@ export default async function AppointmentsPage({ searchParams }: { searchParams:
   const appointments = (await getAppointments(session.user.token)).data;
 
   const upcoming = appointments.filter(isFuture);
-  const past = appointments.filter((a) => !isFuture(a)).reverse();
 
   return (
     <main className="mx-auto w-full max-w-4xl px-4 py-16 sm:px-6">
@@ -37,29 +36,7 @@ export default async function AppointmentsPage({ searchParams }: { searchParams:
         ) : null}
       </div>
 
-      <section aria-labelledby="upcoming-title">
-        <h2 id="upcoming-title" className="mb-4 text-sm text-neutral-400">กำลังจะถึง · {upcoming.length}</h2>
-        {upcoming.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-neutral-200 p-12 text-center text-neutral-400">ยังไม่มีนัดหมาย</p>
-        ) : (
-          <div className="flex flex-col gap-3">
-            {upcoming.map((a) => (
-              <AppointmentCard key={a._id} appointment={a} showOwner={isAdmin} />
-            ))}
-          </div>
-        )}
-      </section>
-
-      {past.length > 0 ? (
-        <section aria-labelledby="past-title" className="mt-14">
-          <h2 id="past-title" className="mb-4 text-sm text-neutral-400">ผ่านมาแล้ว · {past.length}</h2>
-          <div className="flex flex-col gap-3">
-            {past.map((a) => (
-              <AppointmentCard key={a._id} appointment={a} showOwner={isAdmin} />
-            ))}
-          </div>
-        </section>
-      ) : null}
+      <AppointmentList appointments={appointments} isAdmin={isAdmin} />
     </main>
   );
 }

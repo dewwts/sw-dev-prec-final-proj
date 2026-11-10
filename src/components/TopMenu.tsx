@@ -17,6 +17,7 @@ export default async function TopMenu() {
         </Link>
         <div className="flex flex-wrap items-center gap-0.5">
           <TopMenuItem href="/services">บริการ</TopMenuItem>
+          {role === "admin" ? <TopMenuItem href="/admin/dashboard">แดชบอร์ด</TopMenuItem> : null}
           {role === "member" ? <TopMenuItem href="/appointments/new">จองคิว</TopMenuItem> : null}
           {session ? <TopMenuItem href="/appointments">{role === "admin" ? "นัดหมายทั้งหมด" : "นัดหมายของฉัน"}</TopMenuItem> : null}
           {role === "admin" ? <TopMenuItem href="/admin/services">จัดการบริการ</TopMenuItem> : null}
